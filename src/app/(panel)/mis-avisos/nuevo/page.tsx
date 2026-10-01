@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
 import { aniosDisponibles, infoTipo, MARCAS, parseTipo, ZONAS } from "@/lib/catalogo";
+import { getCotizacion } from "@/lib/datos";
 import { requireRol } from "@/lib/sesion";
-import { publicarAviso } from "./actions";
+import { ActionForm } from "@/components/action-form";
+import { publicarAviso } from "@/lib/contenido-actions";
 
 export const metadata: Metadata = { title: "Publicar aviso" };
 
@@ -21,7 +23,7 @@ const EJEMPLOS = {
 
 // Mismo esquema que publicar un pedido: primero el tipo, después el formulario.
 export default async function NuevoAvisoPage({ searchParams }: PageProps<"/mis-avisos/nuevo">) {
-  await requireRol("revendedor");
+  await requireRol("comprador", "revendedor");
   const tipo = parseTipo((await searchParams).tipo);
 
   if (!tipo) {
@@ -35,6 +37,8 @@ export default async function NuevoAvisoPage({ searchParams }: PageProps<"/mis-a
 
   const info = infoTipo(tipo);
   const ejemplo = EJEMPLOS[tipo];
+  const cotizacion = await getCotizacion();
+  const esLancha = tipo === "lancha";
 
   return (
     <>
@@ -55,7 +59,19 @@ export default async function NuevoAvisoPage({ searchParams }: PageProps<"/mis-a
           </Link>
         </div>
 
-        <form action={publicarAviso} className="flex flex-col gap-6">
+        <ActionForm
+          action={publicarAviso}
+          className="flex flex-col gap-6"
+          popups={{
+            patente_existente: {
+              titulo: esLancha ? "Esa matrícula ya está publicada" : "Esa patente ya está publicada",
+              texto:
+                "Ya tenemos un vehículo cargado con esa patente. Si es tuyo, lo encontrás en Mis avisos. " +
+                "Si no lo publicaste vos, puede ser un intento de estafa con tu vehículo: escribinos y lo revisamos.",
+              link: { href: "/mis-avisos", label: "Ver mis avisos" },
+            },
+          }}
+        >
           <input type="hidden" name="tipo" value={tipo} />
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -111,7 +127,7 @@ export default async function NuevoAvisoPage({ searchParams }: PageProps<"/mis-a
             </Field>
           </div>
 
-          <PrecioInput name="precio" label="Precio" />
+          <PrecioInput name="precio" label="Precio" cotizacion={cotizacion} />
 
           <Field label="Zona" htmlFor="zona" hint="Dónde se puede ver el vehículo.">
             <Select id="zona" name="zona" required defaultValue="" aria-describedby="zona-ayuda">
@@ -124,17 +140,28 @@ export default async function NuevoAvisoPage({ searchParams }: PageProps<"/mis-a
             </Select>
           </Field>
 
-          <Field label="Fotos" htmlFor="fotos" hint="Hasta 10 fotos. La primera es la que se ve en el catálogo.">
-            <input
-              id="fotos"
-              name="fotos"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              multiple
-              aria-describedby="fotos-ayuda"
-              className="block w-full text-base text-muted file:mr-4 file:min-h-12 file:cursor-pointer file:rounded-lg file:border-0 file:bg-primary-soft file:px-4 file:font-semibold file:text-primary"
+          <Field
+            label={esLancha ? "Matrícula" : "Patente"}
+            htmlFor="patente"
+            hint="No se muestra en el aviso. La usamos para que el mismo vehículo no se publique dos veces y para prevenir estafas."
+          >
+            <Input
+              id="patente"
+              name="patente"
+              required
+              maxLength={14}
+              autoCapitalize="characters"
+              autoComplete="off"
+              placeholder={esLancha ? "Ej: REY12345" : tipo === "moto" ? "Ej: A123BCD" : "Ej: AB123CD"}
+              aria-describedby="patente-ayuda"
+              className="uppercase"
             />
           </Field>
+
+          {/* Las fotos llegan en el próximo paso (subida, compresión y guardado). */}
+          <p className="rounded-lg bg-surface px-4 py-3 text-base text-muted">
+            <span className="font-medium text-foreground">Fotos:</span> muy pronto vas a poder subirlas.
+          </p>
 
           <Field
             label="Descripción"
@@ -148,7 +175,7 @@ export default async function NuevoAvisoPage({ searchParams }: PageProps<"/mis-a
           <Button type="submit" size="lg" className="w-full sm:w-auto sm:self-start">
             Publicar aviso
           </Button>
-        </form>
+        </ActionForm>
       </Card>
     </>
   );

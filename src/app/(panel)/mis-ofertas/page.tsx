@@ -4,7 +4,7 @@ import { SuccessAlert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { getMisOfertas } from "@/lib/demo-data";
+import { getMisOfertas } from "@/lib/datos";
 import { formatPrecio, formatUso, haceCuanto } from "@/lib/format";
 import { requireRol } from "@/lib/sesion";
 
@@ -43,7 +43,13 @@ export default async function MisOfertasPage({ searchParams }: PageProps<"/mis-o
                     Para el pedido <span className="font-medium text-foreground">{pedido.marca} {pedido.modelo}</span> ·{" "}
                     {pedido.zona}
                   </p>
-                  {pedido.estado === "activo" ? <Badge tone="primary">Enviada</Badge> : <Badge>Pedido cerrado</Badge>}
+                  {oferta.estado === "baja" ? (
+                    <Badge tone="warning">Dada de baja</Badge>
+                  ) : pedido.estado === "activo" ? (
+                    <Badge tone="primary">Enviada</Badge>
+                  ) : (
+                    <Badge>Pedido cerrado</Badge>
+                  )}
                 </div>
 
                 <div className="mt-3 flex flex-wrap items-end justify-between gap-2">

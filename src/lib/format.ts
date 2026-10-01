@@ -8,6 +8,16 @@ export function formatPrecio(valor: number, moneda: Moneda): string {
   return `${moneda === "USD" ? "USD" : "$"} ${numero.format(valor)}`;
 }
 
+/**
+ * El precio en la otra moneda, con la cotización usada al publicar:
+ * "≈ USD 9.888 · dólar a $1.517 al publicar". Vacío si no hay cotización.
+ */
+export function formatEquivalente(precio: number, moneda: Moneda, precioUsd?: number | null, cotizacion?: number | null): string {
+  if (!cotizacion) return "";
+  const otro = moneda === "ARS" ? formatPrecio(precioUsd ?? Math.round(precio / cotizacion), "USD") : formatPrecio(Math.round(precio * cotizacion), "ARS");
+  return `≈ ${otro} · dólar a $${numero.format(cotizacion)} al publicar`;
+}
+
 /** "62.000 km", o "350 h" si es una lancha. */
 export function formatUso(uso: number, tipo: TipoVehiculo): string {
   return `${numero.format(uso)} ${infoTipo(tipo).uso.unidad}`;

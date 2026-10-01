@@ -6,7 +6,7 @@ import { PedidoDatos } from "@/components/pedido-datos";
 import { TipoChip } from "@/components/tipo-vehiculo";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { getPedidosAdmin } from "@/lib/demo-data";
+import { getPedidosAdmin } from "@/lib/datos";
 import { haceCuanto } from "@/lib/format";
 import { requireRol } from "@/lib/sesion";
 
@@ -40,7 +40,7 @@ export default async function AdminPedidosPage() {
               </div>
               <PedidoDatos pedido={pedido} />
               {pedido.comentarios && <p className="text-base text-muted">“{pedido.comentarios}”</p>}
-              <Moderar tipo="pedido" nombre={`${pedido.marca} ${pedido.modelo}`} activoInicial />
+              <Moderar tipo="pedido" id={pedido.id} nombre={`${pedido.marca} ${pedido.modelo}`} activo={pedido.estado !== "baja"} />
             </Card>
           </li>
         ))}

@@ -6,7 +6,7 @@ import { TipoChip } from "@/components/tipo-vehiculo";
 import { SuccessAlert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
-import { getMisPedidos } from "@/lib/demo-data";
+import { getMisPedidos } from "@/lib/datos";
 import { haceCuanto } from "@/lib/format";
 import type { Pedido } from "@/lib/types";
 import { requireRol } from "@/lib/sesion";
@@ -15,7 +15,7 @@ export const metadata: Metadata = { title: "Mis pedidos" };
 
 export default async function MisPedidosPage({ searchParams }: PageProps<"/mis-pedidos">) {
   await requireRol("comprador");
-  const { publicado } = await searchParams;
+  const { publicado, cerrado } = await searchParams;
   const pedidos = await getMisPedidos();
   const activos = pedidos.filter((p) => p.estado === "activo");
   const cerrados = pedidos.filter((p) => p.estado === "cerrado");
@@ -36,6 +36,10 @@ export default async function MisPedidosPage({ searchParams }: PageProps<"/mis-p
         <SuccessAlert title="¡Listo! Publicamos tu pedido.">
           Los revendedores ya lo pueden ver. Las ofertas te van a aparecer acá.
         </SuccessAlert>
+      )}
+
+      {cerrado === "1" && (
+        <SuccessAlert title="Cerramos tu pedido.">Los revendedores ya no lo ven. ¡Gracias por contarnos!</SuccessAlert>
       )}
 
       {pedidos.length === 0 ? (

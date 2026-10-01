@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field, Select } from "@/components/ui/field";
 import { MARCAS, MAX_OFERTAS_POR_PEDIDO, parseMarca, parseTipo, RANGOS_PRECIO_USD, ZONAS } from "@/lib/catalogo";
-import { type FiltrosPedidos, getPedidosDisponibles, getPedidosYaOfertados } from "@/lib/demo-data";
+import { type Filtros, getPedidosDisponibles } from "@/lib/datos";
 import { formatPrecio, haceCuanto } from "@/lib/format";
 import type { Pedido } from "@/lib/types";
 import { requireRol } from "@/lib/sesion";
@@ -19,7 +19,7 @@ export const metadata: Metadata = { title: "Pedidos de compradores" };
  * Los filtros vienen de la URL y se aceptan solo si están en el catálogo: lo
  * que no se reconoce se ignora, no se pasa tal cual a la consulta.
  */
-function leerFiltros(sp: Record<string, string | string[] | undefined>): FiltrosPedidos {
+function leerFiltros(sp: Record<string, string | string[] | undefined>): Filtros {
   const uno = (v: string | string[] | undefined) => (typeof v === "string" ? v : undefined);
   const tipo = parseTipo(uno(sp.tipo));
   const zona = uno(sp.zona);
@@ -36,7 +36,7 @@ function leerFiltros(sp: Record<string, string | string[] | undefined>): Filtros
 export default async function PedidosPage({ searchParams }: PageProps<"/pedidos">) {
   await requireRol("revendedor");
   const filtros = leerFiltros(await searchParams);
-  const [pedidos, yaOfertados] = await Promise.all([getPedidosDisponibles(filtros), getPedidosYaOfertados()]);
+  const pedidos = await getPedidosDisponibles(filtros);
   // El tipo no cuenta como filtro: es la pestaña.
   const cantidadFiltros = [filtros.marca, filtros.zona, filtros.hasta].filter(Boolean).length;
   const hayFiltros = cantidadFiltros > 0;
@@ -128,7 +128,7 @@ export default async function PedidosPage({ searchParams }: PageProps<"/pedidos"
         <ul className="flex flex-col gap-4">
           {pedidos.map((p) => (
             <li key={p.id}>
-              <PedidoCard pedido={p} yaOfertaste={yaOfertados.has(p.id)} />
+              <PedidoCard pedido={p} yaOfertaste={p.yaOferte === true} />
             </li>
           ))}
         </ul>

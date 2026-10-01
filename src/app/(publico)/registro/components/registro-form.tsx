@@ -8,8 +8,8 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { type FormState, registrarse } from "@/lib/sesion-actions";
 
 const ROLES = [
-  { valor: "comprador", titulo: "Busco un vehículo", texto: "Publico qué quiero y recibo ofertas." },
-  { valor: "revendedor", titulo: "Vendo vehículos", texto: "Veo pedidos, oferto y publico mis avisos." },
+  { valor: "comprador", titulo: "Particular", texto: "Busco un vehículo o vendo el mío." },
+  { valor: "revendedor", titulo: "Agencia o revendedor", texto: "Vendo vehículos: veo pedidos, oferto y publico avisos." },
 ] as const;
 
 /**
@@ -27,7 +27,7 @@ export function RegistroForm({ rolInicial }: { rolInicial: "comprador" | "revend
 
       {/* Lo primero es para qué viene: cambia todo lo que ve después. */}
       <fieldset>
-        <legend className="mb-2 text-base font-medium">¿Qué querés hacer?</legend>
+        <legend className="mb-2 text-base font-medium">¿Quién sos?</legend>
         <div className="grid gap-3 sm:grid-cols-2">
           {ROLES.map((r) => (
             <label key={r.valor} className="cursor-pointer">
@@ -77,7 +77,7 @@ export function RegistroForm({ rolInicial }: { rolInicial: "comprador" | "revend
       <Field
         label="WhatsApp"
         htmlFor="telefono"
-        hint="Con código de área, sin 0 ni 15. Ej: 11 2233 4455. Si vendés, es obligatorio: es como te contactan."
+        hint="Con código de área, sin 0 ni 15. Ej: 11 2233 4455. Lo necesitás para publicar u ofertar: es como te contactan."
       >
         <Input
           id="telefono"

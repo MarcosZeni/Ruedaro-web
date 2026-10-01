@@ -3,7 +3,7 @@ import { Moderar } from "@/components/panel/moderar";
 import { ContenidoTabs } from "@/components/panel/contenido-tabs";
 import { PageTitle } from "@/components/panel/page-title";
 import { Card } from "@/components/ui/card";
-import { getOfertasAdmin } from "@/lib/demo-data";
+import { getOfertasAdmin } from "@/lib/datos";
 import { formatPrecio, formatUso, haceCuanto } from "@/lib/format";
 import { requireRol } from "@/lib/sesion";
 
@@ -41,7 +41,7 @@ export default async function AdminOfertasPage() {
                 <p className="text-xl font-bold">{formatPrecio(oferta.precio, oferta.moneda)}</p>
               </div>
               {oferta.comentario && <p className="text-base">“{oferta.comentario}”</p>}
-              <Moderar tipo="oferta" nombre={`${oferta.marca} ${oferta.modelo} ${oferta.anio}`} activoInicial />
+              <Moderar tipo="oferta" id={oferta.id} nombre={`${oferta.marca} ${oferta.modelo} ${oferta.anio}`} activo={oferta.estado === "visible"} />
             </Card>
           </li>
         ))}

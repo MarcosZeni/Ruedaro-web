@@ -15,7 +15,7 @@
 
 1. **Pagar por oportunidades (principal):** ver los pedidos de compradores es gratis, pero hacer una oferta cuesta créditos o requiere un plan. El revendedor paga por un cliente concreto, no por visibilidad.
 2. **Plan mensual para revendedores:** incluye una cantidad de ofertas por mes, perfil verificado y estadísticas.
-3. **Destacados:** pagar para aparecer arriba en el catálogo. Cuando haya tráfico.
+3. **Destacados (implementado, 01/10/2026):** los avisos son gratis e ilimitados (uno por patente). Destacar un aviso lo pone en el carrusel de la portada y de su sección. Cada usuario tiene **1 destacado gratis**; con el **plan de destacados**, hasta **10**. Por ahora el plan se cobra por fuera (transferencia o link de Mercado Pago) y lo activa un admin por 30 días desde el panel; Mercado Pago integrado queda para después. Si el plan vence, en el carrusel queda solo el primer destacado.
 4. **Publicidad en redes:** más adelante, como servicio extra y opcional, no como base del negocio.
 
 Cobrar recién cuando haya movimiento real en la plataforma.

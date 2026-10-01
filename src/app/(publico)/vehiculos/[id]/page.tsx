@@ -6,8 +6,8 @@ import { TipoChip, TipoIcon } from "@/components/tipo-vehiculo";
 import { ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { infoTipo } from "@/lib/catalogo";
-import { getPublicacion } from "@/lib/demo-data";
-import { formatPrecio, formatUso, haceCuanto, linkWhatsApp } from "@/lib/format";
+import { getPublicacion } from "@/lib/datos";
+import { formatEquivalente, formatPrecio, formatUso, haceCuanto, linkWhatsApp } from "@/lib/format";
 import { SITE } from "@/lib/site";
 
 export async function generateMetadata({ params }: PageProps<"/vehiculos/[id]">): Promise<Metadata> {
@@ -20,17 +20,18 @@ export default async function VehiculoPage({ params }: PageProps<"/vehiculos/[id
   if (!p) notFound();
 
   const info = infoTipo(p.tipo);
+  const seccion = p.vendedor === "agencia" ? { href: "/vehiculos/agencias", label: "Agencias" } : { href: "/vehiculos/particulares", label: "Particulares" };
   const titulo = `${p.marca} ${p.modelo}`;
   const mensaje = `Hola ${p.revendedor.nombre}, vi en ${SITE.name} el ${titulo} ${p.anio} a ${formatPrecio(p.precio, p.moneda)}. ¿Sigue disponible?`;
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
       <Link
-        href={`/vehiculos?tipo=${p.tipo}`}
+        href={`${seccion.href}?tipo=${p.tipo}`}
         className="-ml-1 mb-4 flex w-fit items-center gap-1 py-1 text-base font-medium text-muted hover:text-foreground"
       >
         <IconArrowLeft className="size-5" />
-        {info.label}
+        {info.label} de {seccion.label.toLowerCase()}
       </Link>
 
       <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
@@ -46,7 +47,12 @@ export default async function VehiculoPage({ params }: PageProps<"/vehiculos/[id
             <p className="text-lg text-muted">{p.version}</p>
           </div>
 
-          <p className="text-4xl font-bold">{formatPrecio(p.precio, p.moneda)}</p>
+          <div>
+            <p className="text-4xl font-bold">{formatPrecio(p.precio, p.moneda)}</p>
+            {p.cotizacion && (
+              <p className="mt-1 text-base text-muted">{formatEquivalente(p.precio, p.moneda, p.precioUsd, p.cotizacion)}</p>
+            )}
+          </div>
 
           <dl className="grid grid-cols-2 gap-2">
             <Dato label="Año" valor={String(p.anio)} />
@@ -56,6 +62,7 @@ export default async function VehiculoPage({ params }: PageProps<"/vehiculos/[id
           </dl>
 
           {/* La acción principal, grande y en verde: es lo único que el comprador tiene que hacer. */}
+          {p.revendedor.telefono && (
           <ButtonLink
             href={linkWhatsApp(p.revendedor.telefono, mensaje)}
             target="_blank"
@@ -66,11 +73,12 @@ export default async function VehiculoPage({ params }: PageProps<"/vehiculos/[id
             <IconChat className="size-5" />
             Consultar por WhatsApp
           </ButtonLink>
+          )}
 
           <Card className="bg-surface">
-            <p className="text-sm text-muted">Lo vende</p>
+            <p className="text-sm text-muted">Lo vende {p.vendedor === "agencia" ? "una agencia" : "un particular"}</p>
             <p className="text-lg font-semibold">{p.revendedor.nombre}</p>
-            <p className="text-base text-muted">{p.revendedor.zona}</p>
+            <p className="text-base text-muted">{p.zona}</p>
           </Card>
         </div>
       </div>

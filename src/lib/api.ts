@@ -75,8 +75,12 @@ export async function apiJson<T>(path: string, init: ApiInit = {}): Promise<T> {
     throw new ApiError(503, "api_caida", "No pudimos conectarnos. Probá de nuevo en un rato.");
   }
 
-  if (res.status === 204) return undefined as T;
-  if (res.ok) return (await res.json()) as T;
+  if (res.ok) {
+    // 204, o un 201 sin cuerpo (crear una oferta no devuelve nada): leer
+    // JSON de una respuesta vacía tiraría error con la operación ya hecha.
+    const cuerpo = await res.text();
+    return (cuerpo ? JSON.parse(cuerpo) : undefined) as T;
+  }
 
   const cuerpo = (await res.json().catch(() => null)) as { codigo?: string; mensaje?: string; campo?: string } | null;
   throw new ApiError(

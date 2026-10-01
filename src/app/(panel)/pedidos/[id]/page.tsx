@@ -9,10 +9,11 @@ import { Button, ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
 import { aniosDisponibles, infoTipo, MARCAS, MAX_OFERTAS_POR_PEDIDO } from "@/lib/catalogo";
-import { getPedidoDisponible, getPedidosYaOfertados } from "@/lib/demo-data";
+import { getCotizacion, getPedidoDisponible } from "@/lib/datos";
 import { haceCuanto } from "@/lib/format";
-import type { Pedido } from "@/lib/types";
-import { enviarOferta } from "./actions";
+import type { Cotizacion, Pedido } from "@/lib/types";
+import { ActionForm } from "@/components/action-form";
+import { enviarOferta } from "@/lib/contenido-actions";
 import { requireRol } from "@/lib/sesion";
 
 export const metadata: Metadata = { title: "Ofertar" };
@@ -23,7 +24,7 @@ export default async function PedidoPage({ params }: PageProps<"/pedidos/[id]">)
   const pedido = await getPedidoDisponible(id);
   if (!pedido) notFound();
 
-  const yaOfertaste = (await getPedidosYaOfertados()).has(id);
+  const yaOfertaste = pedido.yaOferte === true;
   const lleno = pedido.cantidadOfertas >= MAX_OFERTAS_POR_PEDIDO;
 
   return (
@@ -62,13 +63,13 @@ export default async function PedidoPage({ params }: PageProps<"/pedidos/[id]">)
           </p>
         </div>
       ) : (
-        <OfertaForm pedido={pedido} />
+        <OfertaForm pedido={pedido} cotizacion={await getCotizacion()} />
       )}
     </>
   );
 }
 
-function OfertaForm({ pedido }: { pedido: Pedido }) {
+function OfertaForm({ pedido, cotizacion }: { pedido: Pedido; cotizacion: Cotizacion | null }) {
   const anios = aniosDisponibles();
   const uso = infoTipo(pedido.tipo).uso;
   const ejemploVersion = { auto: "1.6 Highline", moto: "S", camion: "1.6 Furgón", lancha: "Mercury 90 HP" }[pedido.tipo];
@@ -83,7 +84,7 @@ function OfertaForm({ pedido }: { pedido: Pedido }) {
       </p>
 
       <Card className="max-w-2xl">
-        <form action={enviarOferta} className="flex flex-col gap-6">
+        <ActionForm action={enviarOferta} className="flex flex-col gap-6">
           <input type="hidden" name="pedidoId" value={pedido.id} />
           <input type="hidden" name="tipo" value={pedido.tipo} />
 
@@ -139,19 +140,12 @@ function OfertaForm({ pedido }: { pedido: Pedido }) {
             </Field>
           </div>
 
-          <PrecioInput name="precio" label="Precio" defaultMoneda={pedido.moneda} />
+          <PrecioInput name="precio" label="Precio" defaultMoneda={pedido.moneda} cotizacion={cotizacion} />
 
-          <Field label="Fotos" htmlFor="fotos" hint="Hasta 10 fotos. La primera es la que se ve en la lista.">
-            <input
-              id="fotos"
-              name="fotos"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              multiple
-              aria-describedby="fotos-ayuda"
-              className="block w-full text-base text-muted file:mr-4 file:min-h-12 file:cursor-pointer file:rounded-lg file:border-0 file:bg-primary-soft file:px-4 file:font-semibold file:text-primary"
-            />
-          </Field>
+          {/* Las fotos llegan en el próximo paso (subida, compresión y guardado). */}
+          <p className="rounded-lg bg-surface px-4 py-3 text-base text-muted">
+            <span className="font-medium text-foreground">Fotos:</span> muy pronto vas a poder subirlas.
+          </p>
 
           <Field
             label="Link a la publicación"
@@ -174,7 +168,7 @@ function OfertaForm({ pedido }: { pedido: Pedido }) {
           <Button type="submit" size="lg" className="w-full sm:w-auto sm:self-start">
             Enviar oferta
           </Button>
-        </form>
+        </ActionForm>
       </Card>
     </section>
   );

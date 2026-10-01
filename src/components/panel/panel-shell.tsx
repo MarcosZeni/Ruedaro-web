@@ -4,7 +4,6 @@ import {
   IconCar,
   IconHome,
   IconList,
-  IconPlus,
   IconSearch,
   IconTag,
   IconUser,
@@ -15,8 +14,8 @@ import { SITE } from "@/lib/site";
 import type { Rol, Usuario } from "@/lib/types";
 
 const ROL_LABEL: Record<Rol, string> = {
-  comprador: "Comprador",
-  revendedor: "Revendedor",
+  comprador: "Particular",
+  revendedor: "Agencia",
   admin: "Administración",
 };
 
@@ -29,8 +28,9 @@ function itemsDeRol(rol: Rol): PanelNavItem[] {
   switch (rol) {
     case "comprador":
       return [
+        // El particular busca (pedidos) y también puede vender lo suyo (avisos).
         { href: "/mis-pedidos", label: "Mis pedidos", icon: <IconList /> },
-        { href: "/mis-pedidos/nuevo", label: "Publicar", icon: <IconPlus /> },
+        { href: "/mis-avisos", label: "Mis avisos", icon: <IconCar /> },
         cuenta,
       ];
     case "revendedor":
@@ -76,8 +76,6 @@ export function PanelShell({ usuario, children }: { usuario: Usuario; children: 
         </div>
       </header>
 
-      <DemoBanner />
-
       {/* pb-28 en celular: que la barra de abajo no tape el final del contenido. */}
       <main id="contenido" className="mx-auto w-full max-w-5xl flex-1 px-4 pt-6 pb-28 sm:px-6 lg:pb-12">
         {children}
@@ -85,20 +83,5 @@ export function PanelShell({ usuario, children }: { usuario: Usuario; children: 
 
       <PanelNav items={items} variant="bottom" />
     </>
-  );
-}
-
-/**
- * Aviso mientras pedidos, ofertas y avisos sigan saliendo de demo-data.ts. La
- * cuenta y la sesión ya son reales. Se borra junto con demo-data.ts.
- */
-function DemoBanner() {
-  return (
-    <div className="border-b border-warning/20 bg-warning-soft text-warning">
-      <p className="mx-auto w-full max-w-5xl px-4 py-2 text-sm sm:px-6">
-        <strong>En construcción:</strong> tu cuenta es real, pero los pedidos, ofertas y avisos que ves todavía
-        son de ejemplo y no se guardan.
-      </p>
-    </div>
   );
 }

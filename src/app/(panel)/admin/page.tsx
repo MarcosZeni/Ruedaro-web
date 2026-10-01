@@ -3,7 +3,7 @@ import Link from "next/link";
 import { PageTitle } from "@/components/panel/page-title";
 import { PedidoDatos } from "@/components/pedido-datos";
 import { Card } from "@/components/ui/card";
-import { getResumenAdmin } from "@/lib/demo-data";
+import { getResumenAdmin } from "@/lib/datos";
 import { haceCuanto } from "@/lib/format";
 import { requireRol } from "@/lib/sesion";
 
@@ -14,8 +14,8 @@ export default async function AdminPage() {
   const r = await getResumenAdmin();
 
   const tiles = [
-    { label: "Compradores", valor: r.compradores, href: "/admin/usuarios" },
-    { label: "Revendedores", valor: r.revendedores, href: "/admin/usuarios" },
+    { label: "Particulares", valor: r.compradores, href: "/admin/usuarios" },
+    { label: "Agencias", valor: r.revendedores, href: "/admin/usuarios" },
     { label: "Pedidos activos", valor: r.pedidosActivos, href: "/admin/pedidos" },
     { label: "Ofertas", valor: r.ofertas, href: "/admin/ofertas" },
     { label: "Avisos publicados", valor: r.publicaciones, href: "/admin/avisos" },

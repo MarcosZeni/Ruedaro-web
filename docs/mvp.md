@@ -14,8 +14,15 @@ Decidido el 30/09/2026: autos y camionetas, motos, camiones y utilitarios, y lan
 
 ## Dos pestañas
 
-- **Buscar:** catálogo de los vehículos que publican los revendedores. Público, sin cuenta. Entró al MVP el 30/09/2026 (antes estaba afuera).
+- **Buscar:** catálogo de vehículos en venta, en **dos secciones separadas**: **Agencias** (revendedores) y **Particulares** (dueños), cada una con su carrusel de destacados y su listado (decidido el 01/10/2026). Público, sin cuenta. Entró al MVP el 30/09/2026.
 - **Publicar:** el comprador publica qué busca (pedido) y recibe ofertas. Es el diferencial.
+
+## Reglas de los avisos (01/10/2026)
+
+- **Publican particulares y agencias**, sin límite de avisos. En pantalla los roles se llaman "Particular" y "Agencia" (en la base siguen siendo `comprador` y `revendedor`).
+- **Patente obligatoria** (matrícula en lanchas), única entre avisos vigentes: evita publicar el mismo vehículo varias veces y que alguien publique uno ajeno. Si ya existe, aparece un aviso que lo explica. **No se muestra al público**; la ven el dueño y los admins.
+- **Destacados:** 1 gratis por usuario, hasta 10 con el plan (ver negocio.md). El carrusel muestra hasta 10 al azar entre los destacados de esa sección y, si faltan, se completa con otros avisos. Pasa solo cada 5 segundos.
+- **Dólar oficial del BCRA:** todo monto (pedido, oferta, aviso) guarda su equivalente en dólares y la cotización usada al publicarlo. Se muestra "≈ USD 9.888 · dólar a $1.517 al publicar", y el filtro de precio compara pesos y dólares juntos.
 
 ## Funciones
 

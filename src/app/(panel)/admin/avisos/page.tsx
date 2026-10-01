@@ -3,7 +3,7 @@ import { ContenidoTabs } from "@/components/panel/contenido-tabs";
 import { Moderar } from "@/components/panel/moderar";
 import { PageTitle } from "@/components/panel/page-title";
 import { PublicacionCard } from "@/components/publicacion-card";
-import { getPublicacionesAdmin } from "@/lib/demo-data";
+import { getPublicacionesAdmin } from "@/lib/datos";
 import { requireRol } from "@/lib/sesion";
 
 export const metadata: Metadata = { title: "Avisos" };
@@ -21,7 +21,11 @@ export default async function AdminAvisosPage() {
         {avisos.map((p) => (
           <li key={p.id}>
             <PublicacionCard publicacion={p}>
-              <Moderar tipo="aviso" nombre={`${p.marca} ${p.modelo} ${p.anio}`} activoInicial={p.estado === "activa"} />
+              <p className="mb-3 text-sm text-muted">
+                {p.vendedor === "agencia" ? "Agencia" : "Particular"} · {p.tipo === "lancha" ? "Matrícula" : "Patente"}{" "}
+                <span className="font-mono font-semibold text-foreground">{p.patente}</span>
+              </p>
+              <Moderar tipo="aviso" id={p.id} nombre={`${p.marca} ${p.modelo} ${p.anio}`} activo={p.estado !== "baja"} />
             </PublicacionCard>
           </li>
         ))}

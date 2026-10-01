@@ -9,8 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MAX_OFERTAS_POR_PEDIDO } from "@/lib/catalogo";
-import { getMiPedido, getOfertasDePedido } from "@/lib/demo-data";
-import { formatPrecio, formatUso, haceCuanto, linkWhatsApp } from "@/lib/format";
+import { getMiPedido } from "@/lib/datos";
+import { formatEquivalente, formatPrecio, formatUso, haceCuanto, linkWhatsApp } from "@/lib/format";
 import { SITE } from "@/lib/site";
 import type { Oferta } from "@/lib/types";
 import { CerrarPedido } from "./components/cerrar-pedido";
@@ -23,11 +23,12 @@ type Orden = "precio" | "recientes";
 export default async function MiPedidoPage({ params, searchParams }: PageProps<"/mis-pedidos/[id]">) {
   await requireRol("comprador");
   const { id } = await params;
-  const pedido = await getMiPedido(id);
-  if (!pedido) notFound();
+  const datos = await getMiPedido(id);
+  if (!datos) notFound();
+  const { pedido } = datos;
 
   const orden: Orden = (await searchParams).orden === "recientes" ? "recientes" : "precio";
-  const ofertas = (await getOfertasDePedido(id)).sort((a, b) =>
+  const ofertas = [...datos.ofertas].sort((a, b) =>
     orden === "precio" ? a.precio - b.precio : b.creado.localeCompare(a.creado),
   );
   const activo = pedido.estado === "activo";
@@ -80,7 +81,7 @@ export default async function MiPedidoPage({ params, searchParams }: PageProps<"
         )}
       </section>
 
-      {activo && <CerrarPedido />}
+      {activo && <CerrarPedido pedidoId={pedido.id} />}
     </>
   );
 }
@@ -135,17 +136,25 @@ function OfertaCard({ oferta }: { oferta: Oferta }) {
               {oferta.version} · {oferta.anio} · {formatUso(oferta.uso, oferta.tipo)}
             </p>
           </div>
-          <p className="text-2xl font-bold">{formatPrecio(oferta.precio, oferta.moneda)}</p>
+          <div className="text-right">
+            <p className="text-2xl font-bold">{formatPrecio(oferta.precio, oferta.moneda)}</p>
+            {oferta.cotizacion && (
+              <p className="text-sm text-muted">
+                {formatEquivalente(oferta.precio, oferta.moneda, oferta.precioUsd, oferta.cotizacion).split(" · ")[0]}
+              </p>
+            )}
+          </div>
         </div>
 
         {oferta.comentario && <p className="text-base">“{oferta.comentario}”</p>}
 
         <p className="text-sm text-muted">
-          <span className="font-medium text-foreground">{oferta.revendedor.nombre}</span> ·{" "}
-          {oferta.revendedor.zona} · ofertó {haceCuanto(oferta.creado)}
+          <span className="font-medium text-foreground">{oferta.revendedor.nombre}</span> · ofertó{" "}
+          {haceCuanto(oferta.creado)}
         </p>
 
         <div className="mt-auto flex flex-col gap-2 sm:flex-row">
+          {oferta.revendedor.telefono && (
           <ButtonLink
             href={linkWhatsApp(oferta.revendedor.telefono, mensaje)}
             target="_blank"
@@ -156,6 +165,7 @@ function OfertaCard({ oferta }: { oferta: Oferta }) {
             <IconChat className="size-5" />
             Hablar por WhatsApp
           </ButtonLink>
+          )}
           {oferta.link && (
             <ButtonLink href={oferta.link} target="_blank" rel="noopener noreferrer nofollow" variant="secondary" size="lg">
               Ver publicación

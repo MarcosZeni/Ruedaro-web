@@ -14,6 +14,8 @@ import type { Usuario } from "@/lib/types";
  */
 export type FormState = {
   error?: string;
+  /** Código estable de la API ("patente_existente"...), para reaccionar distinto a ciertos errores. */
+  codigo?: string;
   campo?: string;
   valores?: Record<string, string>;
   ok?: boolean;

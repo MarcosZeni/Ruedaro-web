@@ -5,7 +5,7 @@ import { getSesion, inicioDeRol } from "@/lib/sesion";
 import { SITE } from "@/lib/site";
 
 const NAV: NavLink[] = [
-  { href: "/vehiculos", label: "Buscar vehículos" },
+  { href: "/vehiculos/agencias", label: "Buscar vehículos" },
   { href: "/#como-funciona", label: "Cómo funciona" },
   { href: "/#revendedores", label: "Para revendedores" },
 ];

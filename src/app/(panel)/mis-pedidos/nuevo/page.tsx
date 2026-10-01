@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
 import { aniosDisponibles, infoTipo, MARCAS, parseTipo, ZONAS } from "@/lib/catalogo";
+import { getCotizacion } from "@/lib/datos";
 import { requireRol } from "@/lib/sesion";
-import { publicarPedido } from "./actions";
+import { ActionForm } from "@/components/action-form";
+import { publicarPedido } from "@/lib/contenido-actions";
 
 export const metadata: Metadata = { title: "Publicar pedido" };
 
@@ -36,6 +38,7 @@ export default async function NuevoPedidoPage({ searchParams }: PageProps<"/mis-
 
   const info = infoTipo(tipo);
   const anios = aniosDisponibles();
+  const cotizacion = await getCotizacion();
 
   return (
     <>
@@ -57,7 +60,7 @@ export default async function NuevoPedidoPage({ searchParams }: PageProps<"/mis-
           </Link>
         </div>
 
-        <form action={publicarPedido} className="flex flex-col gap-6">
+        <ActionForm action={publicarPedido} className="flex flex-col gap-6">
           <input type="hidden" name="tipo" value={tipo} />
 
           <Field label="Marca" htmlFor="marca">
@@ -113,6 +116,7 @@ export default async function NuevoPedidoPage({ searchParams }: PageProps<"/mis-
             name="presupuesto"
             label="¿Cuánto querés gastar como máximo?"
             hint="Es un tope: te pueden ofertar más barato."
+            cotizacion={cotizacion}
           />
 
           <Field label="¿Dónde estás?" htmlFor="zona" hint="Así te ofertan revendedores cerca tuyo.">
@@ -138,7 +142,7 @@ export default async function NuevoPedidoPage({ searchParams }: PageProps<"/mis-
           <Button type="submit" size="lg" className="w-full sm:w-auto sm:self-start">
             Publicar pedido
           </Button>
-        </form>
+        </ActionForm>
       </Card>
     </>
   );

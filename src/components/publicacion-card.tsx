@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { TipoChip, TipoIcon } from "@/components/tipo-vehiculo";
-import { formatPrecio, formatUso } from "@/lib/format";
+import { formatEquivalente, formatPrecio, formatUso } from "@/lib/format";
 import type { Publicacion } from "@/lib/types";
 
 /**
@@ -22,8 +22,13 @@ export function PublicacionCard({
   const contenido = (
     <>
       {/* Lugar para la foto principal. Hasta que haya fotos, el ícono del tipo. */}
-      <div className="flex aspect-[4/3] w-full items-center justify-center rounded-lg bg-surface text-muted">
+      <div className="relative flex aspect-[4/3] w-full items-center justify-center rounded-lg bg-surface text-muted">
         <TipoIcon tipo={p.tipo} className="size-12" />
+        {p.destacada && (
+          <span className="absolute top-2 left-2 rounded-full bg-primary px-2.5 py-0.5 text-sm font-semibold text-on-primary">
+            ★ Destacado
+          </span>
+        )}
       </div>
       <div className="mt-3 flex flex-col gap-1">
         <TipoChip tipo={p.tipo} />
@@ -34,6 +39,9 @@ export function PublicacionCard({
           {p.anio} · {formatUso(p.uso, p.tipo)}
         </p>
         <p className="mt-1 text-2xl font-bold">{formatPrecio(p.precio, p.moneda)}</p>
+        {p.cotizacion && (
+          <p className="text-sm text-muted">{formatEquivalente(p.precio, p.moneda, p.precioUsd, p.cotizacion).split(" · ")[0]}</p>
+        )}
         <p className="text-sm text-muted">
           {p.revendedor.nombre} · {p.zona}
         </p>

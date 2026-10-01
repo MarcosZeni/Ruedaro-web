@@ -1,6 +1,6 @@
 # pedidos-autos (nombre provisorio)
 
-Marketplace de compraventa de vehículos (autos y camionetas, motos, camiones y utilitarios, lanchas) enfocado en revendedores (Argentina). Diferencial: **el comprador publica qué busca y los revendedores le ofertan.** Dos pestañas: **Buscar** (catálogo de avisos de revendedores, entra en el MVP desde el 30/09/2026) y **Publicar** (pedido del comprador).
+Marketplace de compraventa de vehículos (autos y camionetas, motos, camiones y utilitarios, lanchas) enfocado en revendedores (Argentina). Diferencial: **el comprador publica qué busca y los revendedores le ofertan.** Dos pestañas: **Buscar** (catálogo en dos secciones separadas, Agencias y Particulares) y **Publicar** (pedido del comprador). Negocio: destacados en el carrusel (1 gratis, 10 con plan pago que activa el admin). Reglas en `docs/mvp.md`.
 
 ## Repositorios
 
@@ -51,13 +51,15 @@ Tomadas de los proyectos existentes del usuario (`D:\Github\Tidies24\LoginServer
 - Web: Next.js 16 + React 19 + Tailwind 4 en `src/`, `output: standalone`, cabeceras de seguridad, `src/lib/api.ts` (`apiFetch`, solo servidor). Build y lint OK.
 - Web, estructura y portada: estilo claro con índigo como color principal (tokens en `globals.css`: `primary`, `muted`, `surface`, `border`...). Componentes `Button`/`ButtonLink` y `Card` en `src/components/ui/`, header con menú móvil (`mobile-menu.tsx`, único componente cliente), footer, portada y 404 en español. Nombre del sitio en `src/lib/site.ts` (Loconsigo, provisorio). `iniciar-web.bat` levanta `npm run dev`. Probado a 360 y 390 px sin scroll horizontal.
 - Web completa como **demo navegable** (sin API): portada, `/registro`, `/ingresar`, paneles de comprador, revendedor y admin, `/cuenta`, modo claro/oscuro (cookie `tema`). Grupos `(publico)` y `(panel)`.
-  - **Registro, ingreso, sesión y Mi cuenta son reales** (API `/api/v1/auth`, cookie `sesion` httpOnly). Pedidos, ofertas y avisos siguen saliendo de `src/lib/demo-data.ts` (funciones con la forma de la futura API); el aviso amarillo de los paneles lo dice. Admin: `UPDATE usuarios SET rol = 'admin' WHERE email = '...'`.
-  - Las Server Actions (publicar, ofertar, guardar cuenta) no guardan: redirigen con aviso de éxito. Cerrar pedido y moderar son solo visuales. `MAX_OFERTAS_POR_PEDIDO = 10` provisorio.
+  - **Todo es real, sin datos de ejemplo**: registro, sesión, Mi cuenta, pedidos, ofertas, avisos del catálogo y moderación van contra la API. Lecturas en `src/lib/datos.ts`, escrituras en `src/lib/contenido-actions.ts` y `src/lib/sesion-actions.ts`. Formularios largos con `ActionForm` (muestra el error de la API, marca el campo y no borra lo escrito). Admin: `UPDATE usuarios SET rol = 'admin' WHERE email = '...'`.
+  - `MAX_OFERTAS_POR_PEDIDO = 10` provisorio (en `ApiCore/Models/Catalogo.cs` y `src/lib/catalogo.ts`; las listas de tipos, marcas y zonas están en los dos lados y hay que cambiarlas juntas).
   - Tipos de vehículo (`auto`, `moto`, `camion`, `lancha`) en `src/lib/catalogo.ts`: marcas por tipo y uso en km (u horas de motor en lanchas, campo `uso`). Publicar pedido y aviso arrancan eligiendo el tipo.
   - Catálogo público `/vehiculos` (pestañas por tipo + filtros) y `/vehiculos/[id]` con WhatsApp. Revendedor: `/mis-avisos`. Admin: "Contenido" con pestañas pedidos/ofertas/avisos.
-  - Falta: fotos reales, cambiar contraseña, recuperar contraseña.
+  - Falta: fotos (los formularios dicen "muy pronto"), cambiar y recuperar contraseña, paginado (listados con tope de 100), cotización para filtrar pesos y dólares juntos, avisos por email/WhatsApp de ofertas nuevas.
 - ApiCore con auth: Argon2id + HashGate + GeoIpResolver (de LoginServer), sesiones opacas (SHA-256 en `sesiones`), `login_attempts` con freno por IP y por email, `.RequireSesion()`. SQL `002_sesiones` y `003_login_attempts` aplicados en la base local. `GeoLite2-Country.mmdb` copiado al lado del `.csproj` (fuera de git).
-- **Próximo paso:** reemplazar `demo-data.ts` por endpoints reales: pedidos, ofertas y avisos (catálogo), con su SQL y su moderación.
+- ApiCore con contenido: SQL `004_pedidos`, `005_ofertas`, `006_publicaciones` aplicados en la base local. Endpoints de catálogo, comprador, revendedor y admin con `.RequireRol(...)`.
+- 01/10/2026: dólar oficial BCRA (SQL `007`), patente única y destacados con plan (SQL `008`), dos secciones de catálogo, carruseles, roles en pantalla "Particular"/"Agencia". Aplicado en la base local.
+- **Próximo paso:** a definir con el usuario (candidatos: fotos, avisos de ofertas nuevas, cruce catálogo↔pedidos, Mercado Pago para el plan).
 
 ## Next.js
 

@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Moderar } from "@/components/panel/moderar";
+import { PlanUsuario } from "@/components/panel/plan-usuario";
 import { PageTitle } from "@/components/panel/page-title";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/field";
-import { getUsuariosAdmin } from "@/lib/demo-data";
+import { getUsuariosAdmin } from "@/lib/datos";
 import { haceCuanto } from "@/lib/format";
 import { requireRol } from "@/lib/sesion";
 import type { Rol } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Usuarios" };
 
-const ROL: Record<Rol, string> = { comprador: "Comprador", revendedor: "Revendedor", admin: "Admin" };
+const ROL: Record<Rol, string> = { comprador: "Particular", revendedor: "Agencia", admin: "Admin" };
 
 export default async function AdminUsuariosPage({ searchParams }: PageProps<"/admin/usuarios">) {
   await requireRol("admin");
@@ -54,7 +55,12 @@ export default async function AdminUsuariosPage({ searchParams }: PageProps<"/ad
                 <p className="truncate text-base text-muted">{u.email}</p>
                 <p className="text-sm text-muted">Se registró {haceCuanto(u.creado)}</p>
               </div>
-              <Moderar tipo="usuario" nombre={u.nombre} activoInicial={u.estado === "activo"} />
+              {u.rol !== "admin" && (
+                <div className="flex flex-col gap-3 sm:items-end">
+                  <Moderar tipo="usuario" id={u.id} nombre={u.nombre} activo={u.estado === "activo"} />
+                  <PlanUsuario id={u.id} planVence={u.planVence} />
+                </div>
+              )}
             </Card>
           </li>
         ))}

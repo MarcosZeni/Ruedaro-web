@@ -11,7 +11,7 @@ export function SiteFooter() {
             <span className="font-semibold text-foreground">{SITE.name}</span> · Compraventa de vehículos en Argentina
           </p>
           <nav aria-label="Pie de página" className="flex flex-wrap gap-x-6 gap-y-2">
-            <Link href="/vehiculos" className="hover:text-foreground">
+            <Link href="/vehiculos/agencias" className="hover:text-foreground">
               Buscar vehículos
             </Link>
             <Link href="/#como-funciona" className="hover:text-foreground">

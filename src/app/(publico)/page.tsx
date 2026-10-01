@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { IconPlus, IconSearch } from "@/components/icons";
+import { Carrusel } from "@/components/carrusel";
 import { PublicacionCard } from "@/components/publicacion-card";
 import { TipoIcon } from "@/components/tipo-vehiculo";
 import { ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TIPOS } from "@/lib/catalogo";
-import { getPublicaciones } from "@/lib/demo-data";
+import { getCarrusel } from "@/lib/datos";
+import type { Publicacion } from "@/lib/types";
 import { SITE } from "@/lib/site";
 
 // Portada. Mobile-first: las clases sin prefijo son para el celular y
@@ -45,7 +47,9 @@ type Modo = "buscar" | "publicar";
 
 export default async function Home({ searchParams }: PageProps<"/">) {
   const modo: Modo = (await searchParams).modo === "publicar" ? "publicar" : "buscar";
-  const recientes = modo === "buscar" ? (await getPublicaciones({})).slice(0, 4) : [];
+  // Un carrusel por sección, cada uno con sus destacados al azar.
+  const [agencias, particulares] =
+    modo === "buscar" ? await Promise.all([getCarrusel("agencia"), getCarrusel("particular")]) : [[], []];
 
   return (
     <>
@@ -57,26 +61,11 @@ export default async function Home({ searchParams }: PageProps<"/">) {
         </div>
       </section>
 
-      {recientes.length > 0 && (
-        <section aria-labelledby="recientes">
-          <div className="mx-auto w-full max-w-6xl px-4 pb-4 sm:px-6">
-            <div className="mb-4 flex items-baseline justify-between gap-3">
-              <h2 id="recientes" className="text-2xl font-bold tracking-tight">
-                Recién publicados
-              </h2>
-              <Link href="/vehiculos" className="text-base font-semibold text-primary">
-                Ver todos →
-              </Link>
-            </div>
-            <ul className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-              {recientes.map((p) => (
-                <li key={p.id}>
-                  <PublicacionCard publicacion={p} href={`/vehiculos/${p.id}`} />
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+      {modo === "buscar" && (
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 pb-4 sm:px-6">
+          <SeccionCarrusel titulo="Destacados de agencias" href="/vehiculos/agencias" items={agencias} />
+          <SeccionCarrusel titulo="Destacados de particulares" href="/vehiculos/particulares" items={particulares} />
+        </div>
       )}
 
       {/* Cómo funciona. scroll-mt deja lugar para el header fijo al saltar al ancla. */}
@@ -138,6 +127,27 @@ export default async function Home({ searchParams }: PageProps<"/">) {
   );
 }
 
+function SeccionCarrusel({ titulo, href, items }: { titulo: string; href: string; items: Publicacion[] }) {
+  if (items.length === 0) return null;
+  return (
+    <section aria-labelledby={href}>
+      <div className="mb-4 flex items-baseline justify-between gap-3">
+        <h2 id={href} className="text-2xl font-bold tracking-tight">
+          {titulo}
+        </h2>
+        <Link href={href} className="text-base font-semibold whitespace-nowrap text-primary">
+          Ver todos →
+        </Link>
+      </div>
+      <Carrusel titulo={titulo}>
+        {items.map((p) => (
+          <PublicacionCard key={p.id} publicacion={p} href={`/vehiculos/${p.id}`} />
+        ))}
+      </Carrusel>
+    </section>
+  );
+}
+
 /**
  * Pestañas "Buscar" y "Publicar pedido". Son links (?modo=publicar): funcionan
  * sin JavaScript y se pueden compartir. scroll={false} para que no salte arriba.
@@ -174,14 +184,14 @@ function HeroBuscar() {
       <div>
         <h1 className="text-4xl font-bold tracking-tight text-balance sm:text-5xl">¿Qué estás buscando?</h1>
         <p className="mt-3 text-lg text-muted text-pretty">
-          Mirá lo que tienen hoy los revendedores. Si no está, publicá un pedido y te lo consiguen.
+          Mirá lo que venden agencias y particulares. Si no está, publicá un pedido y te lo consiguen.
         </p>
       </div>
       <ul className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {TIPOS.map((t) => (
           <li key={t.valor}>
             <Link
-              href={`/vehiculos?tipo=${t.valor}`}
+              href={`/vehiculos/agencias?tipo=${t.valor}`}
               className="flex h-full min-h-32 flex-col items-center justify-center gap-3 rounded-xl border-2 border-border bg-background p-4 text-center hover:border-primary hover:bg-primary-soft"
             >
               <TipoIcon tipo={t.valor} className="size-10 text-primary" />

@@ -6,14 +6,14 @@ La diferencia con los clasificados tradicionales: **el comprador publica qué au
 
 ## Estado
 
-La web está completa como **demostración navegable**: portada, registro, ingreso y los tres paneles (comprador, revendedor y administración), con modo claro y oscuro. Todavía no está conectada a la API:
+La web funciona completa contra la API: portada, catálogo, registro, ingreso y los tres paneles (comprador, revendedor y administración), con modo claro y oscuro. Lo que falta:
 
-- Los datos salen de `src/lib/demo-data.ts`. Cada función tiene la forma que va a tener la llamada a la API, para reemplazarla sin tocar las páginas.
-- **Registro, ingreso y Mi cuenta ya son reales**: se guardan en la API. Para que funcionen, la API tiene que estar corriendo (`ApiCore\iniciar-api.bat`).
-- Publicar, ofertar, guardar la cuenta y moderar muestran la confirmación pero no guardan nada.
-- Un aviso amarillo en los paneles lo recuerda. Para ver el panel de administración, hay que pasar una cuenta a admin en la base (ver el README de ApiCore).
+- **Fotos:** todavía no se suben; las tarjetas muestran el ícono del tipo.
+- **Paginado:** los listados muestran hasta 100.
+- **Filtro de precio:** es en dólares; lo publicado en pesos no aparece con ese filtro puesto.
+- **Avisos de ofertas nuevas:** el comprador todavía tiene que entrar a mirar.
 
-La API (`ApiCore`) tiene la base: `/health`, verificación del schema y la tabla `usuarios`.
+Para que la web funcione, la API tiene que estar corriendo (`ApiCore\iniciar-api.bat`). Para ver el panel de administración, hay que pasar una cuenta a admin en la base (ver el README de ApiCore).
 
 ## Correr en desarrollo (Windows)
 
@@ -25,23 +25,23 @@ cp .env.example .env.local   # API_URL de la API .NET
 npm run dev
 ```
 
-Para recorrer: prendé la API (`ApiCore\iniciar-api.bat`) y después la web. "Publicar pedido" en la portada lleva al registro; elegí "Busco un vehículo" o "Vendo vehículos". Para probar el otro rol, creá otra cuenta.
+Para recorrer: prendé la API (`ApiCore\iniciar-api.bat`) y después la web. "Publicar pedido" en la portada lleva al registro; elegí "Particular" o "Agencia o revendedor". Para probar el otro rol, creá otra cuenta.
 
 ## Pantallas
 
 | Ruta | Quién | Qué hace |
 |---|---|---|
 | `/` | Todos | Portada: qué es, cómo funciona, para revendedores |
-| `/vehiculos` | Todos | Catálogo ("Buscar"): pestañas por tipo y filtros |
+| `/vehiculos/agencias`, `/vehiculos/particulares` | Todos | Catálogo ("Buscar") en dos secciones: carrusel de destacados, pestañas por tipo y filtros |
 | `/vehiculos/[id]` | Todos | Detalle y consulta por WhatsApp |
 | `/registro`, `/ingresar` | Todos | Crear cuenta (eligiendo rol) y entrar |
-| `/mis-pedidos` | Comprador | Sus pedidos, activos y cerrados |
-| `/mis-pedidos/nuevo` | Comprador | Publicar un pedido |
-| `/mis-pedidos/[id]` | Comprador | Ofertas recibidas, WhatsApp, cerrar pedido |
-| `/pedidos` | Revendedor | Pedidos de compradores, con filtros |
-| `/pedidos/[id]` | Revendedor | Detalle y formulario de oferta |
-| `/mis-ofertas` | Revendedor | Ofertas enviadas y su estado |
-| `/mis-avisos`, `/mis-avisos/nuevo` | Revendedor | Sus vehículos en el catálogo: publicar, pausar, marcar vendido |
+| `/mis-pedidos` | Particular | Sus pedidos, activos y cerrados |
+| `/mis-pedidos/nuevo` | Particular | Publicar un pedido |
+| `/mis-pedidos/[id]` | Particular | Ofertas recibidas, WhatsApp, cerrar pedido |
+| `/pedidos` | Agencia | Pedidos de compradores, con filtros |
+| `/pedidos/[id]` | Agencia | Detalle y formulario de oferta |
+| `/mis-ofertas` | Agencia | Ofertas enviadas y su estado |
+| `/mis-avisos`, `/mis-avisos/nuevo` | Particular y agencia | Sus vehículos: publicar (con patente), destacar, pausar, marcar vendido |
 | `/admin` | Admin | Resumen |
 | `/admin/usuarios` | Admin | Moderación de usuarios |
 | `/admin/pedidos`, `/admin/ofertas`, `/admin/avisos` | Admin | "Contenido": moderación, con pestañas |
