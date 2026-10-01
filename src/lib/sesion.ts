@@ -2,44 +2,39 @@ import "server-only";
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { cache } from "react";
+import { ApiError, apiJson, COOKIE_SESION } from "@/lib/api";
 import type { Rol, Usuario } from "@/lib/types";
 
 // =============================================================================
 // Sesión
 //
-// DEMO: la "sesión" es una cookie con el rol elegido, sin usuario ni
-// contraseña de verdad. Cuando exista el login, getSesion() lee la cookie de
-// sesión (token opaco, httpOnly) y le pregunta a la API quién es. El resto del
-// código usa solo getSesion() y requireRol(), así que no cambia.
+// La cookie "sesion" (httpOnly) tiene el token; la API dice de quién es. Todo
+// el resto del código usa solo getSesion() y requireRol().
 //
 // requireRol() en la página es comodidad (manda a cada uno a su lugar), no
 // seguridad: la que decide si un usuario puede ver o hacer algo es la API.
 // =============================================================================
 
-export const COOKIE_SESION_DEMO = "demo_rol";
+/**
+ * Usuario de la sesión, o null. cache(): el header, el layout y la página
+ * preguntan lo mismo en un mismo pedido, y se le pregunta a la API una sola vez.
+ *
+ * Si la API no contesta, el error sube (y se ve la página de error): devolver
+ * null mandaría a "Ingresar" a gente que tiene la sesión bien.
+ */
+export const getSesion = cache(async (): Promise<Usuario | null> => {
+  if (!(await cookies()).get(COOKIE_SESION)?.value) return null;
 
-const ROLES: Rol[] = ["comprador", "revendedor", "admin"];
-
-const USUARIOS_DEMO: Record<Rol, Usuario> = {
-  comprador: {
-    id: "u1", nombre: "Lucía Fernández", email: "lucia@example.com", telefono: "5491100000101",
-    rol: "comprador", estado: "activo", creado: "2026-09-01T12:00:00Z",
-  },
-  revendedor: {
-    id: "u9", nombre: "Mi agencia", email: "agencia@example.com", telefono: "5491100000009",
-    rol: "revendedor", estado: "activo", creado: "2026-08-15T12:00:00Z",
-  },
-  admin: {
-    id: "u0", nombre: "Administración", email: "admin@example.com",
-    rol: "admin", estado: "activo", creado: "2026-08-01T12:00:00Z",
-  },
-};
-
-export async function getSesion(): Promise<Usuario | null> {
-  const rol = (await cookies()).get(COOKIE_SESION_DEMO)?.value;
-  const valido = ROLES.find((r) => r === rol);
-  return valido ? USUARIOS_DEMO[valido] : null;
-}
+  try {
+    return await apiJson<Usuario>("/api/v1/auth/yo");
+  } catch (e) {
+    // Vencida, cerrada o de un usuario suspendido. La cookie vieja queda hasta
+    // el próximo ingreso: en un Server Component no se pueden borrar cookies.
+    if (e instanceof ApiError && e.status === 401) return null;
+    throw e;
+  }
+});
 
 /** Pantalla de inicio de cada rol: adonde va después de entrar. */
 export function inicioDeRol(rol: Rol): string {

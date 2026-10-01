@@ -9,9 +9,9 @@ La diferencia con los clasificados tradicionales: **el comprador publica qué au
 La web está completa como **demostración navegable**: portada, registro, ingreso y los tres paneles (comprador, revendedor y administración), con modo claro y oscuro. Todavía no está conectada a la API:
 
 - Los datos salen de `src/lib/demo-data.ts`. Cada función tiene la forma que va a tener la llamada a la API, para reemplazarla sin tocar las páginas.
-- La "sesión" es una cookie con el rol (`src/lib/sesion.ts`). No hay usuarios ni contraseñas reales.
+- **Registro, ingreso y Mi cuenta ya son reales**: se guardan en la API. Para que funcionen, la API tiene que estar corriendo (`ApiCore\iniciar-api.bat`).
 - Publicar, ofertar, guardar la cuenta y moderar muestran la confirmación pero no guardan nada.
-- Un aviso amarillo en los paneles lo recuerda y permite cambiar de rol para recorrer todo.
+- Un aviso amarillo en los paneles lo recuerda. Para ver el panel de administración, hay que pasar una cuenta a admin en la base (ver el README de ApiCore).
 
 La API (`ApiCore`) tiene la base: `/health`, verificación del schema y la tabla `usuarios`.
 
@@ -25,7 +25,7 @@ cp .env.example .env.local   # API_URL de la API .NET
 npm run dev
 ```
 
-Para recorrer la demo: "Publicar pedido" en la portada lleva al registro; elegí "Busco un auto" o "Vendo autos". Desde el aviso amarillo de los paneles se cambia de rol (incluido administración).
+Para recorrer: prendé la API (`ApiCore\iniciar-api.bat`) y después la web. "Publicar pedido" en la portada lleva al registro; elegí "Busco un vehículo" o "Vendo vehículos". Para probar el otro rol, creá otra cuenta.
 
 ## Pantallas
 

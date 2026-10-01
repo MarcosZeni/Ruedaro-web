@@ -51,12 +51,13 @@ Tomadas de los proyectos existentes del usuario (`D:\Github\Tidies24\LoginServer
 - Web: Next.js 16 + React 19 + Tailwind 4 en `src/`, `output: standalone`, cabeceras de seguridad, `src/lib/api.ts` (`apiFetch`, solo servidor). Build y lint OK.
 - Web, estructura y portada: estilo claro con índigo como color principal (tokens en `globals.css`: `primary`, `muted`, `surface`, `border`...). Componentes `Button`/`ButtonLink` y `Card` en `src/components/ui/`, header con menú móvil (`mobile-menu.tsx`, único componente cliente), footer, portada y 404 en español. Nombre del sitio en `src/lib/site.ts` (Loconsigo, provisorio). `iniciar-web.bat` levanta `npm run dev`. Probado a 360 y 390 px sin scroll horizontal.
 - Web completa como **demo navegable** (sin API): portada, `/registro`, `/ingresar`, paneles de comprador, revendedor y admin, `/cuenta`, modo claro/oscuro (cookie `tema`). Grupos `(publico)` y `(panel)`.
-  - Datos de `src/lib/demo-data.ts` (funciones con la forma de la futura API). Sesión de demo: cookie `demo_rol` en `src/lib/sesion.ts`; el aviso amarillo permite cambiar de rol.
+  - **Registro, ingreso, sesión y Mi cuenta son reales** (API `/api/v1/auth`, cookie `sesion` httpOnly). Pedidos, ofertas y avisos siguen saliendo de `src/lib/demo-data.ts` (funciones con la forma de la futura API); el aviso amarillo de los paneles lo dice. Admin: `UPDATE usuarios SET rol = 'admin' WHERE email = '...'`.
   - Las Server Actions (publicar, ofertar, guardar cuenta) no guardan: redirigen con aviso de éxito. Cerrar pedido y moderar son solo visuales. `MAX_OFERTAS_POR_PEDIDO = 10` provisorio.
   - Tipos de vehículo (`auto`, `moto`, `camion`, `lancha`) en `src/lib/catalogo.ts`: marcas por tipo y uso en km (u horas de motor en lanchas, campo `uso`). Publicar pedido y aviso arrancan eligiendo el tipo.
   - Catálogo público `/vehiculos` (pestañas por tipo + filtros) y `/vehiculos/[id]` con WhatsApp. Revendedor: `/mis-avisos`. Admin: "Contenido" con pestañas pedidos/ofertas/avisos.
   - Falta: fotos reales, cambiar contraseña, recuperar contraseña.
-- **Próximo paso:** registro e inicio de sesión (Argon2id, sesiones, `login_attempts`, `GeoIpResolver`); después reemplazar `demo-data.ts` por endpoints reales de pedidos y ofertas.
+- ApiCore con auth: Argon2id + HashGate + GeoIpResolver (de LoginServer), sesiones opacas (SHA-256 en `sesiones`), `login_attempts` con freno por IP y por email, `.RequireSesion()`. SQL `002_sesiones` y `003_login_attempts` aplicados en la base local. `GeoLite2-Country.mmdb` copiado al lado del `.csproj` (fuera de git).
+- **Próximo paso:** reemplazar `demo-data.ts` por endpoints reales: pedidos, ofertas y avisos (catálogo), con su SQL y su moderación.
 
 ## Next.js
 

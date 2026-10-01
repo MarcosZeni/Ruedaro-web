@@ -9,6 +9,8 @@ import type { ComponentProps, ReactNode } from "react";
 const control =
   "block w-full min-h-12 rounded-lg border border-border bg-background px-3 text-base text-foreground " +
   "placeholder:text-muted/70 focus:border-primary focus:outline-2 focus:outline-primary/30 " +
+  // Campo marcado con error por el formulario (aria-invalid): borde rojo.
+  "aria-invalid:border-danger aria-invalid:outline-danger/30 " +
   "disabled:bg-surface disabled:text-muted";
 
 type FieldProps = {

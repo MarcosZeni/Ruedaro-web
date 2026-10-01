@@ -59,8 +59,8 @@ export type Usuario = {
   id: string;
   nombre: string;
   email: string;
-  /** WhatsApp en formato E.164 sin el "+". Opcional hasta que lo cargue. */
-  telefono?: string;
+  /** WhatsApp en formato E.164 sin el "+". null hasta que lo cargue. */
+  telefono?: string | null;
   rol: Rol;
   estado: EstadoUsuario;
   /** ISO 8601 en UTC. */

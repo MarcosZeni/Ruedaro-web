@@ -11,7 +11,6 @@ import {
   IconUsers,
 } from "@/components/icons";
 import { PanelNav, type PanelNavItem } from "@/components/panel/panel-nav";
-import { verComo } from "@/lib/sesion-actions";
 import { SITE } from "@/lib/site";
 import type { Rol, Usuario } from "@/lib/types";
 
@@ -77,7 +76,7 @@ export function PanelShell({ usuario, children }: { usuario: Usuario; children: 
         </div>
       </header>
 
-      <DemoBanner rolActual={usuario.rol} />
+      <DemoBanner />
 
       {/* pb-28 en celular: que la barra de abajo no tape el final del contenido. */}
       <main id="contenido" className="mx-auto w-full max-w-5xl flex-1 px-4 pt-6 pb-28 sm:px-6 lg:pb-12">
@@ -89,30 +88,17 @@ export function PanelShell({ usuario, children }: { usuario: Usuario; children: 
   );
 }
 
-/** Se borra junto con demo-data.ts y la sesión de demo, cuando haya login real. */
-function DemoBanner({ rolActual }: { rolActual: Rol }) {
+/**
+ * Aviso mientras pedidos, ofertas y avisos sigan saliendo de demo-data.ts. La
+ * cuenta y la sesión ya son reales. Se borra junto con demo-data.ts.
+ */
+function DemoBanner() {
   return (
     <div className="border-b border-warning/20 bg-warning-soft text-warning">
-      <form
-        action={verComo}
-        className="mx-auto flex w-full max-w-5xl flex-wrap items-center gap-x-2 gap-y-1 px-4 py-2 text-sm sm:px-6"
-      >
-        <span>
-          <strong>Modo demostración:</strong> datos de ejemplo, no se guarda nada. Ver como:
-        </span>
-        {(Object.keys(ROL_LABEL) as Rol[]).map((rol) => (
-          <button
-            key={rol}
-            type="submit"
-            name="rol"
-            value={rol}
-            aria-pressed={rol === rolActual}
-            className={`min-h-8 rounded px-1 underline ${rol === rolActual ? "font-bold no-underline" : "font-semibold"}`}
-          >
-            {ROL_LABEL[rol].toLowerCase()}
-          </button>
-        ))}
-      </form>
+      <p className="mx-auto w-full max-w-5xl px-4 py-2 text-sm sm:px-6">
+        <strong>En construcción:</strong> tu cuenta es real, pero los pedidos, ofertas y avisos que ves todavía
+        son de ejemplo y no se guardan.
+      </p>
     </div>
   );
 }
