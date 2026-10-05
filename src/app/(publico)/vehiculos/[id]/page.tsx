@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { IconArrowLeft, IconChat } from "@/components/icons";
+import { ConsejoCompra } from "@/components/consejo-compra";
 import { TipoChip, TipoIcon } from "@/components/tipo-vehiculo";
 import { ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -80,6 +81,8 @@ export default async function VehiculoPage({ params }: PageProps<"/vehiculos/[id
             <p className="text-lg font-semibold">{p.revendedor.nombre}</p>
             <p className="text-base text-muted">{p.zona}</p>
           </Card>
+
+          <ConsejoCompra />
         </div>
       </div>
 

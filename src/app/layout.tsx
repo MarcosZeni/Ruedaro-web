@@ -12,6 +12,8 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
+  // Base para las URLs absolutas de metadatos (vista previa al compartir).
+  metadataBase: new URL(SITE.url),
   title: { default: `${SITE.name} · ${SITE.tagline}`, template: `%s · ${SITE.name}` },
   description:
     "Publicá el auto que buscás con tu presupuesto y recibí ofertas de revendedores. Gratis para compradores.",

@@ -1,4 +1,4 @@
-# pedidos-autos (nombre provisorio)
+# Ruedaro (ruedaro.com.ar)
 
 Marketplace de compraventa de vehículos (autos y camionetas, motos, camiones y utilitarios, lanchas) enfocado en revendedores (Argentina). Diferencial: **el comprador publica qué busca y los revendedores le ofertan.** Dos pestañas: **Buscar** (catálogo en dos secciones separadas, Agencias y Particulares) y **Publicar** (pedido del comprador). Negocio: destacados en el carrusel (1 gratis, 10 con plan pago que activa el admin). Reglas en `docs/mvp.md`.
 
@@ -15,7 +15,7 @@ Carpeta de trabajo `D:\Github\Web-Autos\`, con dos repos separados (privados, si
 - `docs/negocio.md`: monetización, riesgos y cómo arrancar.
 - `docs/mvp.md`: alcance del MVP, roles, funciones y reglas.
 - `docs/stack.md`: stack, estructura, dependencias y convenciones. **Fuente de verdad técnica.**
-- `docs/nombres.md`: nombres candidatos y dominios consultados (candidato principal: Loconsigo, `.com.ar` y `.ar` libres al 30/09/2026).
+- `docs/nombres.md`: nombre elegido (**Ruedaro**, dominio `ruedaro.com.ar`) y los candidatos descartados.
 
 ## Reglas del proyecto
 
@@ -49,7 +49,7 @@ Tomadas de los proyectos existentes del usuario (`D:\Github\Tidies24\LoginServer
 - ApiCore: Minimal API con `/health`, `SchemaCheck` al arrancar, IP real vía `TrustedNetworks`, rate limit global, cabeceras de seguridad, Dockerfile chiseled. SQL: `000` (base y dos usuarios de MySQL con contraseña aleatoria) y `001_usuarios`. Probada contra MySQL real (200 en `/health`).
 - MySQL local: instancia propia `MySQL8Autos` en `127.0.0.1:3308` (`D:\MySQL\my-3308.ini`, datos en `D:\MySQL\data3308`, claves en `D:\MySQL\credenciales-3308.txt`). `000` y `001` ya aplicados. `ApiCore\iniciar-api.bat` prende la base (`iniciar-mysql.bat`, que instala el servicio con UAC la primera vez) y después la API.
 - Web: Next.js 16 + React 19 + Tailwind 4 en `src/`, `output: standalone`, cabeceras de seguridad, `src/lib/api.ts` (`apiFetch`, solo servidor). Build y lint OK.
-- Web, estructura y portada: estilo claro con índigo como color principal (tokens en `globals.css`: `primary`, `muted`, `surface`, `border`...). Componentes `Button`/`ButtonLink` y `Card` en `src/components/ui/`, header con menú móvil (`mobile-menu.tsx`, único componente cliente), footer, portada y 404 en español. Nombre del sitio en `src/lib/site.ts` (Loconsigo, provisorio). `iniciar-web.bat` levanta `npm run dev`. Probado a 360 y 390 px sin scroll horizontal.
+- Web, estructura y portada: estilo claro con índigo como color principal (tokens en `globals.css`: `primary`, `muted`, `surface`, `border`...). Componentes `Button`/`ButtonLink` y `Card` en `src/components/ui/`, header con menú móvil (`mobile-menu.tsx`, único componente cliente), footer, portada y 404 en español. Nombre del sitio en `src/lib/site.ts` (Ruedaro, constante); la URL pública sale de la variable `SITE_URL`. `iniciar-web.bat` levanta `npm run dev`. Probado a 360 y 390 px sin scroll horizontal.
 - Web completa como **demo navegable** (sin API): portada, `/registro`, `/ingresar`, paneles de comprador, revendedor y admin, `/cuenta`, modo claro/oscuro (cookie `tema`). Grupos `(publico)` y `(panel)`.
   - **Todo es real, sin datos de ejemplo**: registro, sesión, Mi cuenta, pedidos, ofertas, avisos del catálogo y moderación van contra la API. Lecturas en `src/lib/datos.ts`, escrituras en `src/lib/contenido-actions.ts` y `src/lib/sesion-actions.ts`. Formularios largos con `ActionForm` (muestra el error de la API, marca el campo y no borra lo escrito). Admin: `UPDATE usuarios SET rol = 'admin' WHERE email = '...'`.
   - `MAX_OFERTAS_POR_PEDIDO = 10` provisorio (en `ApiCore/Models/Catalogo.cs` y `src/lib/catalogo.ts`; las listas de tipos, marcas y zonas están en los dos lados y hay que cambiarlas juntas).

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { IconChat, IconExternal } from "@/components/icons";
 import { TipoIcon } from "@/components/tipo-vehiculo";
+import { ConsejoCompra } from "@/components/consejo-compra";
 import { PageTitle } from "@/components/panel/page-title";
 import { PedidoDatos } from "@/components/pedido-datos";
 import { Badge } from "@/components/ui/badge";
@@ -71,13 +72,16 @@ export default async function MiPedidoPage({ params, searchParams }: PageProps<"
             </p>
           </div>
         ) : (
-          <ul className="flex flex-col gap-4">
-            {ofertas.map((o) => (
-              <li key={o.id}>
-                <OfertaCard oferta={o} />
-              </li>
-            ))}
-          </ul>
+          <div className="flex flex-col gap-4">
+            <ConsejoCompra />
+            <ul className="flex flex-col gap-4">
+              {ofertas.map((o) => (
+                <li key={o.id}>
+                  <OfertaCard oferta={o} />
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </section>
 

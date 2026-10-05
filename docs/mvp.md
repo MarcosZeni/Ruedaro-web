@@ -22,6 +22,7 @@ Decidido el 30/09/2026: autos y camionetas, motos, camiones y utilitarios, y lan
 - **Publican particulares y agencias**, sin límite de avisos. En pantalla los roles se llaman "Particular" y "Agencia" (en la base siguen siendo `comprador` y `revendedor`).
 - **Patente obligatoria** (matrícula en lanchas), única entre avisos vigentes: evita publicar el mismo vehículo varias veces y que alguien publique uno ajeno. Si ya existe, aparece un aviso que lo explica. **No se muestra al público**; la ven el dueño y los admins.
 - **Destacados:** 1 gratis por usuario, hasta 10 con el plan (ver negocio.md). El carrusel muestra hasta 10 al azar entre los destacados de esa sección y, si faltan, se completa con otros avisos. Pasa solo cada 5 segundos.
+- **Multas y deudas:** decidido no consultarlas desde el sitio (01/10/2026). Los organismos no tienen API abierta (portales con captcha) y los proveedores privados cobran por consulta. El detalle del vehículo y las ofertas muestran un consejo: pedirle la patente al vendedor y revisar multas, deuda, prendas y embargos en los sitios oficiales antes de señar.
 - **Dólar oficial del BCRA:** todo monto (pedido, oferta, aviso) guarda su equivalente en dólares y la cotización usada al publicarlo. Se muestra "≈ USD 9.888 · dólar a $1.517 al publicar", y el filtro de precio compara pesos y dólares juntos.
 
 ## Funciones
