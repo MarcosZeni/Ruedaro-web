@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import { type MenuAction, MobileMenu, type NavLink } from "@/components/mobile-menu";
-import { getSesion, inicioDeRol } from "@/lib/sesion";
+import { getSesionOpcional, inicioDeRol } from "@/lib/sesion";
 import { SITE } from "@/lib/site";
 
 const NAV: NavLink[] = [
@@ -11,7 +11,7 @@ const NAV: NavLink[] = [
 ];
 
 export async function SiteHeader() {
-  const usuario = await getSesion();
+  const usuario = await getSesionOpcional();
 
   // Con sesión, un solo botón que lleva a su panel. Sin sesión, la acción
   // principal (publicar) y la secundaria (entrar).

@@ -6,8 +6,9 @@ import { TipoTabs } from "@/components/tipo-vehiculo";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Field, Select } from "@/components/ui/field";
 import { aniosDisponibles, infoTipo, MARCAS, parseMarca, parseTipo, RANGOS_PRECIO_USD, ZONAS } from "@/lib/catalogo";
-import { type Filtros, getCantidadPorTipo, getCarrusel, getPublicaciones } from "@/lib/datos";
-import type { Vendedor } from "@/lib/types";
+import { SinConexion } from "@/components/sin-conexion";
+import { conRespaldo, type Filtros, getCantidadPorTipo, getCarrusel, getPublicaciones } from "@/lib/datos";
+import type { TipoVehiculo, Vendedor } from "@/lib/types";
 import { formatPrecio } from "@/lib/format";
 
 /**
@@ -49,13 +50,22 @@ export async function Catalogo({
   const seccion = SECCIONES.find((s) => s.vendedor === vendedor)!;
   const basePath = seccion.href;
   const filtros: Filtros = { ...leerFiltros(searchParams), vendedor };
-  const [publicaciones, cantidades, carrusel] = await Promise.all([
-    getPublicaciones(filtros),
-    getCantidadPorTipo(vendedor),
-    // El carrusel solo en la vista general: con filtros puestos, el usuario
-    // está buscando algo puntual y le estorbaría arriba de los resultados.
-    filtros.tipo || filtros.marca || filtros.zona || filtros.hasta || filtros.anioDesde ? [] : getCarrusel(vendedor),
-  ]);
+  // Si la API no contesta, la página se muestra igual (pestañas, filtros,
+  // header) con un aviso en lugar del listado.
+  const {
+    datos: [publicaciones, cantidades, carrusel],
+    caida,
+  } = await conRespaldo(
+    Promise.all([
+      getPublicaciones(filtros),
+      // Sin API no hay cantidades: las pestañas se muestran sin números.
+      getCantidadPorTipo(vendedor) as Promise<Record<TipoVehiculo, number> | undefined>,
+      // El carrusel solo en la vista general: con filtros puestos, el usuario
+      // está buscando algo puntual y le estorbaría arriba de los resultados.
+      filtros.tipo || filtros.marca || filtros.zona || filtros.hasta || filtros.anioDesde ? [] : getCarrusel(vendedor),
+    ]),
+    [[], undefined, []],
+  );
   const cantidadFiltros = [filtros.marca, filtros.zona, filtros.hasta, filtros.anioDesde].filter(Boolean).length;
   const titulo = filtros.tipo ? infoTipo(filtros.tipo).label : "Todos los vehículos";
 
@@ -165,11 +175,15 @@ export async function Catalogo({
         </form>
       </details>
 
-      <p className="mb-3 text-base text-muted" aria-live="polite">
-        {publicaciones.length === 1 ? "1 vehículo" : `${publicaciones.length} vehículos`}
-      </p>
+      {caida ? (
+        <SinConexion />
+      ) : (
+        <p className="mb-3 text-base text-muted" aria-live="polite">
+          {publicaciones.length === 1 ? "1 vehículo" : `${publicaciones.length} vehículos`}
+        </p>
+      )}
 
-      {publicaciones.length === 0 ? (
+      {caida ? null : publicaciones.length === 0 ? (
         <SinResultados tipo={filtros.tipo ? infoTipo(filtros.tipo).singular : "vehículo"} />
       ) : (
         <ul className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">

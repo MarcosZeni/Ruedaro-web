@@ -1,7 +1,7 @@
 import "server-only";
 
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import { cache } from "react";
 import { ApiError, apiJson, COOKIE_SESION } from "@/lib/api";
 import type { Rol, Usuario } from "@/lib/types";
@@ -35,6 +35,25 @@ export const getSesion = cache(async (): Promise<Usuario | null> => {
     throw e;
   }
 });
+
+/**
+ * Para las páginas públicas (header, ingresar, registro): si la API no
+ * contesta, se muestran como sin sesión en vez de romper. Mirar la portada no
+ * tiene por qué depender de que la API esté viva; los paneles sí, y ahí se usa
+ * getSesion/requireRol, que muestran la página de error.
+ */
+export async function getSesionOpcional(): Promise<Usuario | null> {
+  try {
+    return await getSesion();
+  } catch (e) {
+    // Los errores internos de Next (por ejemplo, "esta página usa cookies, no
+    // es estática") tienen que seguir de largo: si se atrapan, Next arma la
+    // página una sola vez y la sirve igual para todos.
+    unstable_rethrow(e);
+    console.error("Sin sesión: la API no contestó.", e);
+    return null;
+  }
+}
 
 /** Pantalla de inicio de cada rol: adonde va después de entrar. */
 export function inicioDeRol(rol: Rol): string {

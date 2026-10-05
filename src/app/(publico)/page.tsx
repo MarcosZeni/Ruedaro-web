@@ -6,7 +6,8 @@ import { TipoIcon } from "@/components/tipo-vehiculo";
 import { ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TIPOS } from "@/lib/catalogo";
-import { getCarrusel } from "@/lib/datos";
+import { SinConexion } from "@/components/sin-conexion";
+import { conRespaldo, getCarrusel } from "@/lib/datos";
 import type { Publicacion } from "@/lib/types";
 import { SITE } from "@/lib/site";
 
@@ -48,8 +49,14 @@ type Modo = "buscar" | "publicar";
 export default async function Home({ searchParams }: PageProps<"/">) {
   const modo: Modo = (await searchParams).modo === "publicar" ? "publicar" : "buscar";
   // Un carrusel por sección, cada uno con sus destacados al azar.
-  const [agencias, particulares] =
-    modo === "buscar" ? await Promise.all([getCarrusel("agencia"), getCarrusel("particular")]) : [[], []];
+  // Sin API, la portada se ve igual: sin carruseles y con un aviso.
+  const {
+    datos: [agencias, particulares],
+    caida,
+  } =
+    modo === "buscar"
+      ? await conRespaldo(Promise.all([getCarrusel("agencia"), getCarrusel("particular")]), [[], []])
+      : { datos: [[], []], caida: false };
 
   return (
     <>
@@ -63,6 +70,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
 
       {modo === "buscar" && (
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 pb-4 sm:px-6">
+          {caida && <SinConexion />}
           <SeccionCarrusel titulo="Destacados de agencias" href="/vehiculos/agencias" items={agencias} />
           <SeccionCarrusel titulo="Destacados de particulares" href="/vehiculos/particulares" items={particulares} />
         </div>

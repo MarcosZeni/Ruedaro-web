@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Card } from "@/components/ui/card";
-import { getSesion, inicioDeRol } from "@/lib/sesion";
+import { getSesionOpcional, inicioDeRol } from "@/lib/sesion";
 import { RegistroForm } from "./components/registro-form";
 
 export const metadata: Metadata = { title: "Crear cuenta" };
 
 export default async function RegistroPage({ searchParams }: PageProps<"/registro">) {
-  const usuario = await getSesion();
+  const usuario = await getSesionOpcional();
   if (usuario) redirect(inicioDeRol(usuario.rol));
 
   const rolInicial = (await searchParams).rol === "revendedor" ? "revendedor" : "comprador";

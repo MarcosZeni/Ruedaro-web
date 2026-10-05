@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { getSesion, inicioDeRol } from "@/lib/sesion";
+import { getSesionOpcional, inicioDeRol } from "@/lib/sesion";
 import { IngresarForm } from "./components/ingresar-form";
 
 export const metadata: Metadata = { title: "Ingresar" };
 
 export default async function IngresarPage() {
-  const usuario = await getSesion();
+  const usuario = await getSesionOpcional();
   if (usuario) redirect(inicioDeRol(usuario.rol));
 
   return (

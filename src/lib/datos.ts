@@ -1,5 +1,6 @@
 import "server-only";
 
+import { unstable_rethrow } from "next/navigation";
 import { ApiError, apiJson } from "@/lib/api";
 import type { Cotizacion, MisPublicaciones, Oferta, Pedido, Publicacion, TipoVehiculo, Usuario, Vendedor } from "@/lib/types";
 
@@ -42,6 +43,20 @@ function query(f: Filtros, extra: Record<string, string> = {}): string {
   if (f.vendedor) q.set("vendedor", f.vendedor);
   const s = q.toString();
   return s ? `?${s}` : "";
+}
+
+/**
+ * Lecturas públicas que no deben tirar la página si la API está caída:
+ * devuelven el valor vacío y avisan con `caida` para mostrar un mensaje.
+ */
+export async function conRespaldo<T>(lectura: Promise<T>, vacio: T): Promise<{ datos: T; caida: boolean }> {
+  try {
+    return { datos: await lectura, caida: false };
+  } catch (e) {
+    unstable_rethrow(e); // los errores internos de Next siguen de largo
+    console.error("La API no contestó; se muestra la página sin esos datos.", e);
+    return { datos: vacio, caida: true };
+  }
 }
 
 // ---- Comprador ---------------------------------------------------------------
@@ -92,7 +107,8 @@ export const getCarrusel = (vendedor: Vendedor) =>
 export async function getCotizacion(): Promise<Cotizacion | null> {
   try {
     return await apiJson<Cotizacion>("/api/v1/cotizacion", { token: null });
-  } catch {
+  } catch (e) {
+    unstable_rethrow(e);
     return null;
   }
 }

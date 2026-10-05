@@ -4,6 +4,7 @@
 import "server-only";
 
 import { cookies, headers } from "next/headers";
+import { unstable_rethrow } from "next/navigation";
 
 // Red interna de Docker en producción (http://api:8080); loopback en desarrollo.
 // Sin NEXT_PUBLIC_ a propósito: el navegador no sabe que la API existe.
@@ -71,6 +72,9 @@ export async function apiJson<T>(path: string, init: ApiInit = {}): Promise<T> {
   try {
     res = await apiFetch(path, init);
   } catch (e) {
+    // Adentro se leen cookies y headers: el aviso interno de Next de "página
+    // dinámica" no es una caída de la API y tiene que seguir de largo.
+    unstable_rethrow(e);
     console.error(`API no disponible (${path}):`, e);
     throw new ApiError(503, "api_caida", "No pudimos conectarnos. Probá de nuevo en un rato.");
   }
